@@ -29,7 +29,7 @@ const Register = () => {
 
   const handleregister = async (values) => {
     try {
-      console.log(import.meta.env.VITE_API_URL)
+      
       const { data } = await instance.post("/register", values);
       toast.success(data?.message);
       navigate("/login");

@@ -13,12 +13,13 @@ connectDB();
 const app = express();
 
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://task-management-system-delta-three.vercel.app"
-  ],
+  origin: "https://task-management-system-delta-three.vercel.app",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 }));
+
+app.options("*", cors());
 app.use(express.json());
 
 app.use("/api", authRoutes);
