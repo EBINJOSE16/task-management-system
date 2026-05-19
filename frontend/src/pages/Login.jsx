@@ -19,6 +19,8 @@ const Login = () => {
     password: "",
   });
 
+  const [errors, setErrors] = useState({});
+
   useEffect(() => {
     emailref.current?.focus();
   }, []);
@@ -28,15 +30,48 @@ const Login = () => {
       ...logindata,
       [e.target.name]: e.target.value,
     });
+
+    // clear error when typing
+    setErrors({
+      ...errors,
+      [e.target.name]: "",
+      form: "",
+    });
+  };
+
+  const validate = async () => {
+    let newErrors = {};
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!logindata.email) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(logindata.email)) {
+      newErrors.email = "Enter a valid email address";
+    }
+
+    if (!logindata.password) {
+      newErrors.password = "Password is required";
+    } else if (logindata.password.length < 3) {
+      newErrors.password = "Password must be at least 3 characters";
+    }
+    const user = await User.findOne({ email });
+
+if (!user) {
+  return res.status(404).json({
+    message: "User not found",
+  });
+}
+
+    return newErrors;
   };
 
   const handlesubmit = async (e) => {
     e.preventDefault();
 
-    const form = e.currentTarget;
-    if (form.checkValidity() === false) {
-      e.stopPropagation();
-      setValidated(true);
+    const formErrors = validate();
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
       return;
     }
 
@@ -49,7 +84,6 @@ const Login = () => {
           token: data.token,
         })
       );
-      console.log("LOGIN RESPONSE:", data);
 
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", data.token);
@@ -57,7 +91,11 @@ const Login = () => {
       toast.success(data.message);
       navigate("/dashboard");
     } catch (error) {
-      toast.error(error?.response?.data?.message || error.message);
+      const message =
+        error?.response?.data?.message || "Invalid email or password";
+
+      setErrors({ form: message });
+      toast.error(message);
     }
   };
 
@@ -73,31 +111,45 @@ const Login = () => {
           <div className="p-4 shadow rounded bg-white mb-4 mt-4">
             <h3 className="text-center mb-4">Login</h3>
 
-            <Form noValidate validated={validated} onSubmit={handlesubmit}>
+            <Form onSubmit={handlesubmit}>
+
+           
               <Form.Group className="mb-3">
                 <Form.Label>Email</Form.Label>
                 <Form.Control
                   name="email"
                   type="email"
                   placeholder="name@example.com"
-                  required
                   ref={emailref}
                   value={logindata.email}
                   onChange={handleChange}
                 />
+                {errors.email && (
+                  <small className="text-danger">{errors.email}</small>
+                )}
               </Form.Group>
 
+            
               <Form.Group className="mb-3">
                 <Form.Label>Password</Form.Label>
                 <Form.Control
                   name="password"
                   type="password"
                   placeholder="xxxxxx"
-                  required
                   value={logindata.password}
                   onChange={handleChange}
                 />
+                {errors.password && (
+                  <small className="text-danger">{errors.password}</small>
+                )}
               </Form.Group>
+
+            
+              {errors.form && (
+                <div className="text-danger text-center mb-2">
+                  {errors.form}
+                </div>
+              )}
 
               <Button type="submit" className="w-100">
                 Login
