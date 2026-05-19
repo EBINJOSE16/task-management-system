@@ -30,7 +30,7 @@ const Register = () => {
   const handleregister = async (values) => {
     try {
       
-      const { data } = await instance.post("/register", values);
+      const { data } = await instance.post("/api/register",values);
       toast.success(data?.message);
       navigate("/login");
     } catch (error) {
