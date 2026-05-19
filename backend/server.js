@@ -14,7 +14,9 @@ connectDB();
 const app = express();
 
 app.use(cors({
-  origin: "https://task-management-system-delta-three.vercel.app",
+  origin: [
+    "https://task-management-system-delta-three.vercel.app",
+  ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
