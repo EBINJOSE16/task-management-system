@@ -16,6 +16,7 @@ const app = express();
 app.use(cors({
   origin: [
     "https://task-management-system-delta-three.vercel.app",
+    "https://task-management-system-git-master-ebinj094-1772s-projects.vercel.app"
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
